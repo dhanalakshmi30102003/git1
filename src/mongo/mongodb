@@ -1,0 +1,33 @@
+import express from "express";
+import { randomUUID } from "crypto";
+import mongoose from "mongoose";
+
+const DATA = [];
+
+const app = express();
+async function main(){
+    await mongoose.connect("mongodb://localhost:27017/test");
+    console.log("connected to database");
+}
+
+app.use(express.json());
+
+app
+  .route("/")
+  .get((req, res) => {
+    res.json(DATA);
+  })
+  .post((req, res) => {
+    const { body } = req;
+    if (body.data) {
+      const newObject = {
+        id: randomUUID(),
+        content: body.data,
+        createdAt: new Date(),
+      };
+      DATA.push(newObject);
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(400);
+    }
+  });
